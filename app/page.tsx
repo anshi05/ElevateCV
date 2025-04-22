@@ -16,13 +16,13 @@ import {
 export default function Home() {
   const router = useRouter()
   const [isAuthenticated, setIsAuthenticated] = useState(false)
-  const { setTheme } = useTheme()
+  const { setTheme, theme } = useTheme()
   const [isMounted, setIsMounted] = useState(false)
 
   useEffect(() => {
     setIsMounted(true)
     const checkAuth = () => {
-      const user = localStorage.getItem("currentUser") // Check for the logged-in user in localStorage
+      const user = localStorage.getItem("currentUser")
       if (user) {
         setIsAuthenticated(true)
       }
@@ -33,14 +33,26 @@ export default function Home() {
   const handleCreateResumeClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault()
     if (isAuthenticated) {
-      router.push('/dashboard') // Redirect to dashboard if authenticated
+      router.push('/dashboard')
     } else {
-      router.push('/signup') // Redirect to signup if not authenticated
+      router.push('/signup')
     }
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-gradient-to-b from-background to-muted/30">
+    <div className="flex flex-col min-h-screen relative">
+      {/* Main Grid Background - Now more visible */}
+      <div className="fixed inset-0 -z-10 overflow-hidden">
+        <div className={`absolute inset-0 ${
+          theme === 'dark' 
+            ? 'bg-[linear-gradient(to_right,rgba(255,255,255,0.1)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.1)_1px,transparent_1px)]' 
+            : 'bg-[linear-gradient(to_right,rgba(0,0,0,0.05)_1px,transparent_1px),linear-gradient(to_bottom,rgba(0,0,0,0.05)_1px,transparent_1px)]'
+        } bg-[size:40px_40px]`}></div>
+      </div>
+
+      {/* Gradient Overlay to soften the grid */}
+      <div className="fixed inset-0 -z-20 bg-gradient-to-b from-background/80 via-background/50 to-muted/30"></div>
+
       <style jsx global>{`
         @keyframes float {
           0%, 100% { transform: translateY(0); }
@@ -78,56 +90,65 @@ export default function Home() {
         }
       `}</style>
 
-      <header className="px-4 lg:px-6 h-16 flex items-center border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="animate-fade-in" style={{ animationDelay: '0.2s' }}>
-          <Link className="flex items-center justify-center hover-scale" href="/">
-            <FileText className="h-6 w-6 text-primary mr-2" />
-            <span className="font-bold text-xl">ElevateCV.io</span>
-          </Link>
-        </div>
-        <nav className="ml-auto flex gap-4 sm:gap-6 items-center">
-          {isAuthenticated ? (
-            <Link className="text-sm font-medium hover:text-primary transition-colors hover-scale" href="/dashboard">
-              Dashboard
-            </Link>
-          ) : (
-            <Link className="text-sm font-medium hover:text-primary transition-colors hover-scale" href="/login">
-              Login
-            </Link>
-          )}
-          {!isAuthenticated && (
-            <div className="hover-scale">
-              <Link href="/signup">
-                <Button variant="secondary" size="sm">
-                  Sign Up
-                </Button>
-              </Link>
-            </div>
-          )}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="hover-scale">
-                <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-                <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
-                <span className="sr-only">Toggle theme</span>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={() => setTheme("light")}>
-                Light
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setTheme("dark")}>
-                Dark
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setTheme("system")}>
-                System
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </nav>
-      </header>
-      <main className="flex-1">
-        <section className="w-full py-12 md:py-24 lg:py-32 xl:py-48">
+<header className="px-4 lg:px-6 h-16 flex items-center border-b bg-background/95 backdrop-blur-lg supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50 w-full">
+  <div className="animate-fade-in" style={{ animationDelay: '0.2s' }}>
+    <Link className="flex items-center justify-center hover-scale" href="/">
+      <FileText className="h-6 w-6 text-primary mr-2" />
+      <span className="font-bold text-xl">ElevateCV.io</span>
+    </Link>
+  </div>
+  <nav className="ml-auto flex gap-4 sm:gap-6 items-center">
+    {isAuthenticated ? (
+      <Link className="text-sm font-medium hover:text-primary transition-colors hover-scale" href="/dashboard">
+        Dashboard
+      </Link>
+    ) : (
+      <Link className="text-sm font-medium hover:text-primary transition-colors hover-scale" href="/login">
+        Login
+      </Link>
+    )}
+    {!isAuthenticated && (
+      <div className="hover-scale">
+        <Link href="/signup">
+          <Button variant="secondary" size="sm">
+            Sign Up
+          </Button>
+        </Link>
+      </div>
+    )}
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="ghost" size="icon" className="hover-scale">
+          <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+          <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+          <span className="sr-only">Toggle theme</span>
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end">
+        <DropdownMenuItem onClick={() => setTheme("light")}>
+          Light
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => setTheme("dark")}>
+          Dark
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => setTheme("system")}>
+          System
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  </nav>
+</header>
+      
+      <main className="flex-1 relative z-10">
+        <section className="w-full py-12 md:py-24 lg:py-32 xl:py-48 relative">
+          {/* Section-specific grid pattern */}
+          <div className="absolute inset-0 -z-10 overflow-hidden">
+            <div className={`absolute inset-0 ${
+              theme === 'dark' 
+                ? 'bg-[linear-gradient(45deg,rgba(255,255,255,0.08)_1px,transparent_1px),linear-gradient(-45deg,rgba(255,255,255,0.08)_1px,transparent_1px)]' 
+                : 'bg-[linear-gradient(45deg,rgba(0,0,0,0.05)_1px,transparent_1px),linear-gradient(-45deg,rgba(0,0,0,0.05)_1px,transparent_1px)]'
+            } bg-[size:60px_60px]`}></div>
+          </div>
           <div className="container px-4 md:px-6 mx-auto">
             <div className="grid gap-6 lg:grid-cols-[1fr_400px] lg:gap-12 xl:grid-cols-[1fr_600px]">
               <div className="flex flex-col justify-center space-y-4">
@@ -175,7 +196,15 @@ export default function Home() {
             </div>
           </div>
         </section>
-        <section className="w-full py-12 md:py-24 lg:py-32 bg-muted/50">
+        <section className="w-full py-12 md:py-24 lg:py-32 bg-muted/30 relative">
+          {/* Different grid pattern for features */}
+          <div className="absolute inset-0 -z-10 overflow-hidden">
+            <div className={`absolute inset-0 ${
+              theme === 'dark' 
+                ? 'bg-[radial-gradient(circle,rgba(255,255,255,0.08)_1px,transparent_1px)]' 
+                : 'bg-[radial-gradient(circle,rgba(0,0,0,0.05)_1px,transparent_1px)]'
+            } bg-[size:40px_40px]`}></div>
+          </div>
           <div className="container px-4 md:px-6 mx-auto">
             <div className="flex flex-col items-center justify-center space-y-4 text-center">
               <div className="space-y-2">
@@ -222,7 +251,15 @@ export default function Home() {
         </section>
         
         {/* Testimonial Section */}
-        <section className="w-full py-12 md:py-24 bg-gradient-to-b from-muted/50 to-background">
+        <section className="w-full py-12 md:py-24 bg-gradient-to-b from-muted/30 to-background relative">
+          {/* Dot grid pattern for testimonials */}
+          <div className="absolute inset-0 -z-10 overflow-hidden">
+            <div className={`absolute inset-0 ${
+              theme === 'dark' 
+                ? 'bg-[radial-gradient(circle,rgba(255,255,255,0.1)_1px,transparent_1px)]' 
+                : 'bg-[radial-gradient(circle,rgba(0,0,0,0.08)_1px,transparent_1px)]'
+            } bg-[size:30px_30px]`}></div>
+          </div>
           <div className="container px-4 md:px-6 mx-auto">
             <div className="flex flex-col items-center justify-center space-y-4 text-center mb-12">
               <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl animate-fade-in">Trusted by Professionals</h2>
@@ -265,7 +302,7 @@ export default function Home() {
           </div>
         </section>
       </main>
-      <footer className="flex flex-col gap-2 sm:flex-row py-6 w-full shrink-0 items-center px-4 md:px-6 border-t">
+      <footer className="flex flex-col gap-2 sm:flex-row py-6 w-full shrink-0 items-center px-4 md:px-6 border-t bg-background/80 backdrop-blur-sm">
         <p className="text-xs text-muted-foreground animate-fade-in">
           © {new Date().getFullYear()} ElevateCV.io. All rights reserved.
         </p>
