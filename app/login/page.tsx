@@ -55,7 +55,7 @@ export default function LoginPage() {
       })
 
       // Redirect to home page instead of dashboard
-      router.push("/dashboard")
+      router.push("/")
     } catch (error) {
       toast({
         title: "Error",
